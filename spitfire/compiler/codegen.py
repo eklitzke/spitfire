@@ -8,21 +8,32 @@ class CodegenError(Exception):
 
 
 class CodeNode(object):
-  def __init__(self, src_line=None):
+  def __init__(self, src_line=None, tag=None):
     self.src_line = src_line
     self.child_nodes = []
-    
+    self.tags = set() if tag is None else set([tag])
+
   def append_line(self, line):
     self.append(CodeNode(line))
-    
+
   def append(self, code_node):
     self.child_nodes.append(code_node)
-    
+
   def extend(self, code_nodes):
     try:
       self.child_nodes.extend(code_nodes)
     except TypeError:
       raise CodegenError("can't add %s" % code_nodes)
+
+  def search_children(self, pred):
+    """Check if pred returns true for any children nodes."""
+    return any(pred(node) or node.search_children(pred) for node in self.child_nodes)
+
+  def add_tag(self, tag):
+    """Tags can optionally be applied to nodes to facilitate analysis in later
+    steps.
+    """
+    self.tags.add(tag)
 
   def __repr__(self):
     return '%s:%s' % (self.__class__.__name__, self.src_line)
@@ -279,11 +290,11 @@ class CodeGenerator(object):
     elif self.options and self.options.omit_local_scope_search:
       return [CodeNode(
         "resolve_placeholder('%(name)s', template=self, global_vars=_globals)"
-        % vars())]
+        % vars(), tag='uses_globals')]
     else:
       return [CodeNode(
         "resolve_placeholder('%(name)s', template=self, local_vars=locals(), global_vars=_globals)"
-        % vars())]
+        % vars(), tag='ues_globals')]
 
   def codegenASTReturnNode(self, node):
     expression = self.generate_python(self.build_code(node.expression)[0])
@@ -354,11 +365,15 @@ class CodeGenerator(object):
     else:
       code_node.append(CodeNode('_buffer = self.new_buffer()'))
     code_node.append(CodeNode('_buffer_write = _buffer.write'))
-    code_node.append(CodeNode('_globals = globals()'))
     code_node.append(CodeNode('_self_filter_function = self.filter_function'))
     
     if self.options and self.options.cheetah_cheats:
+      code_node.append(CodeNode('_globals = globals()'))
       code_node.append(CodeNode('_self_search_list = self.search_list + [_globals]'))
+
+    # TODO: write a test for this
+    elif self.options and (self.options.always_emit_globals or code_node.search_children(lambda x: 'uses_globals' in x.tags)):
+      code_node.append(CodeNode('_globals = globals()'))
 
     for n in node.child_nodes:
       code_child_nodes = self.build_code(n)
@@ -412,7 +427,7 @@ class CodeGenerator(object):
     # use dictionary syntax to get around coalescing 'global' statements
     #globalize_var = CodeNode('global %(cached_name)s' % vars())
     if_code = CodeNode("if %(cached_name)s is None:" % vars())
-    if_code.append(CodeNode("_globals['%(cached_name)s'] = %(expression)s" % vars()))
+    if_code.append(CodeNode("_globals['%(cached_name)s'] = %(expression)s" % vars(), tag='uses_globals'))
     return [if_code]
 
   def codegenASTFilterNode(self, node):

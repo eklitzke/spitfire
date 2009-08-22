@@ -34,6 +34,9 @@ class AnalyzerOptions(object):
     
     # runs of whitespace characters are replace with one space
     self.normalize_whitespace = False
+
+    # don't always emit _globals = globals(), if the _globals var isn't referenced
+    self.always_emit_globals = False
     
     # expensive dotted notations are aliased to a local variable for faster
     # lookups: write = self.buffer.write
