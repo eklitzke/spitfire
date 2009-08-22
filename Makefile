@@ -6,8 +6,8 @@ ifndef PYTHON
 	export PYTHON = python
 endif	
 
-CRUNNER = PYTHONPATH=build/t/lib:. $(PYTHON) build/t/scripts/crunner.py -v --x-disable-psyco
-COMPILER = PYTHONPATH=build/t/lib:. $(PYTHON) build/t/scripts/spitfire-compile -v --x-disable-psyco -X no-generate-unicode
+CRUNNER = PYTHONPATH=build/t/lib:. $(PYTHON) build/t/scripts/crunner.py -v
+COMPILER = PYTHONPATH=build/t/lib:. $(PYTHON) build/t/scripts/spitfire-compile -v -X no-generate-unicode
 
 spitfire/compiler/parser.py: spitfire/compiler/parser.g
 	$(YAPPS) spitfire/compiler/parser.g
