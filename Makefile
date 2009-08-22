@@ -10,7 +10,7 @@ CRUNNER = PYTHONPATH=build/t/lib:. $(PYTHON) build/t/scripts/crunner.py -v
 COMPILER = PYTHONPATH=build/t/lib:. $(PYTHON) build/t/scripts/spitfire-compile -v -X no-generate-unicode
 
 spitfire/compiler/parser.py: spitfire/compiler/parser.g
-	$(YAPPS) spitfire/compiler/parser.g
+	$(PYTHON) $(YAPPS) spitfire/compiler/parser.g
 
 parser: spitfire/compiler/parser.py
 
