@@ -200,7 +200,7 @@ class Compiler(object):
       if flag_name.startswith('no_'):
         flag_name = flag_name[3:]
         flag_value = False
-      if type(getattr(self.analyzer_options, flag_name, None)) == bool:
+      if type(getattr(self.analyzer_options, flag_name, None)) is bool:
         setattr(self.analyzer_options, flag_name, flag_value)
       else:
         logging.warning('unknown optimizer flag: %s', flag_name)

@@ -27,7 +27,7 @@ class AnalyzerOptions(object):
     self.ignore_optional_whitespace = False
 
     # adjacent text nodes become one single node
-    self.collapse_adjacent_text = False
+    self.collapse_adjacent_text = True
 
     # generate templates with unicode() instead of str()
     self.generate_unicode = True
