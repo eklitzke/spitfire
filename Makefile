@@ -64,16 +64,15 @@ tests: no_whitespace_tests whitespace_tests test_function_registry test_opt
 
 .PHONY : clean
 clean: clean_tests
-	@find . -name '*.pyc' -exec rm {} \;
+	@find . -name '*.pyc' -delete
 	@rm -f spitfire/compiler/parser.py
 	@rm -rf build
 
 .PHONY : clean_tests
 clean_tests:
-	@rm -f tests/*.py
-	@rm -f tests/*.pyc
-	@find tests -name '*.failed' -exec rm {} \;
+	@rm -f tests/*.py tests/*.pyc
+	@find tests -name '*.failed' -delete
 	@touch tests/__init__.py
 
-.PHONE : clean_all
+.PHONY : clean_all
 clean_all : clean clean_tests
