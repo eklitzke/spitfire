@@ -44,7 +44,7 @@ class SpitfireTemplate(object):
     return _resolve_from_search_list(self.search_list, name, default)
 
   def has_var(self, name):
-    var = self.get_var(name, default=UnresolvedPlaceholder) 
+    var = self.get_var(name, default=UnresolvedPlaceholder)
     return var is not UnresolvedPlaceholder
 
   # wrap the underlying filter call so that items don't get filtered multiple
@@ -66,9 +66,13 @@ class SpitfireTemplate(object):
 
 
 def enable_psyco(template_class):
-  import psyco
-  psyco.bind(SpitfireTemplate)
-  psyco.bind(template_class)
+  try:
+    import psyco
+  except ImportError:
+    pass
+  else:
+    psyco.bind(SpitfireTemplate)
+    psyco.bind(template_class)
 
 def template_method(function):
   function.template_method = True

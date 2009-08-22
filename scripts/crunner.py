@@ -139,7 +139,8 @@ class TestRunner(object):
       try:
         template_class = getattr(template_module, classname)
         template = template_class(search_list=self.search_list)
-        current_output = template.main().encode('utf8')
+        current_output = template.main()
+        #current_output = template.main().encode('utf8')
       except Exception, e:
         if not self.options.quiet:
           logging.exception("test error:")
