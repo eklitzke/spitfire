@@ -32,7 +32,7 @@ class CodeNode(object):
 # in this case, we are generating python source code that should be somewhat
 # human-readable
 class CodeGenerator(object):
-  indent_str = '  '
+  indent_str = '    ' # four spaces, as specified in PEP-8
   indent_level = 0
 
   # options - an AnalyzerOptions object
@@ -470,9 +470,8 @@ class CodeGenerator(object):
 run_tmpl = """
 
 if __name__ == '__main__':
-  import spitfire.runtime.runner
-  spitfire.runtime.runner.run_template(%(classname)s)
-"""
+%(indent)simport spitfire.runtime.runner
+%(indent)sspitfire.runtime.runner.run_template(%%(classname)s)""" % {'indent': CodeGenerator.indent_str}
 
 
 
